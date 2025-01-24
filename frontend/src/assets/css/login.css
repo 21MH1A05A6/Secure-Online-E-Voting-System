@@ -1,0 +1,78 @@
+.login-page {
+    background: url('../images/pic3.jpg') no-repeat center center fixed;
+    background-size: 1400px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-position: left;
+}
+
+
+
+
+
+.login-container {
+    background: #ffffff;
+    padding: 30px;
+    width: 450px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    margin: 100px auto;
+    position: absolute;
+    top: 30%; /* Keep it vertically centered */
+    right: 10%; /* Move it to the left */
+    transform: translateY(-50%);
+}
+
+h2 {
+    font-size: 100px;
+    font-weight: 900;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.input-container {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    font-weight: bold;
+    color: black;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+}
+
+input:focus {
+    border: 1px solid #4CAF50;
+    outline: none;
+}
+
+.login-btn {
+    background-color: #2e7d32;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background-color: #1b5e20;
+}
