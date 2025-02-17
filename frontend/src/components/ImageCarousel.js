@@ -6,7 +6,7 @@ import pic11 from "../assets/images/pic11.jpg";
 
 const ImageCarousel = () => {
   return (
-    <div className="container-fluid vh-100 w-100 p-0">
+    <div className="container-fluid vh-95 w-100 p-0">
       <Carousel interval={2000} pause="hover">  {/* 2000ms = 2 seconds */}
         <Carousel.Item>
           <img
