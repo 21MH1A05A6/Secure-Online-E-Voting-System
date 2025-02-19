@@ -1,0 +1,35 @@
+.view-voters-container {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .send-mails-btn {
+    float: right;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .send-mails-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+  }
+  

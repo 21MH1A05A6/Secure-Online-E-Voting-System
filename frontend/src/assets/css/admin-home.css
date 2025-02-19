@@ -1,0 +1,51 @@
+/* Background styling */
+.home-container {
+    /* background-image: url("/images/background.jpg"); */
+    background-color: pink;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  /* Admin Greeting */
+  .greeting {
+    position: absolute;
+    top: 10%;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 5px black;
+  }
+  
+  /* Buttons aligned side by side */
+  .button-container {
+    position: absolute;
+    top: 20%;
+    right: 5%;
+    display: flex;
+    gap: 15px; /* Space between buttons */
+  }
+  
+  /* Button styling */
+  .home-button {
+    width: 200px;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(0, 123, 255, 0.8);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .home-button:hover {
+    background-color: rgba(0, 123, 255, 1);
+  }
+  
