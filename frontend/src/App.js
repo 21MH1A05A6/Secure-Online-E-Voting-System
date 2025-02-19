@@ -8,6 +8,9 @@ import HomePage from "./pages/HomePage";
 import Home from "./pages/Home";
 import VoterIDSearchPage from "./pages/VoterIDSearchPage";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AdminHomePage from "./pages/AdminHomePage";
+import CreateElection from "./pages/CreateElection";
+import ViewVoters from "./pages/ViewVoters";
 
 function App() {
   return (
@@ -20,6 +23,10 @@ function App() {
           <Route path="/loginpage" element={<LoginPage />} />
           <Route path="/details" element={<PersonalDetailsPage />} />
           <Route path="/searchpage" element={<VoterIDSearchPage />} />
+          <Route path="/admin-home" element={<AdminHomePage />} />
+          <Route path="/create-election" element={<CreateElection />} />
+          <Route path="/view-voters" element={<ViewVoters />} />
+
         </Routes>
       </Router>
       <div>
