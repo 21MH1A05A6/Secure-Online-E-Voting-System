@@ -6,11 +6,13 @@ const crypto = require("crypto");
 // Fetch all registered voters
 exports.getVoters = async (req, res) => {
   try {
-    const voters = await User.find({}, "username email");
+    const voters = await User.find()
     res.status(200).json(voters);
   } catch (error) {
     console.error("Error fetching voters:", error);
-    res.status(500).json({ message: "Error fetching voters", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching voters", error: error.message });
   }
 };
 
@@ -33,13 +35,20 @@ exports.sendEmails = async (req, res) => {
 
     // Find users who haven't received credentials or whose credentials have expired
     const users = await User.find(
-      { $or: [{ tempPassword: { $exists: false } }, { tempPasswordExpiry: { $lt: new Date() } }] },
+      {
+        $or: [
+          { tempPassword: { $exists: false } },
+          { tempPasswordExpiry: { $lt: new Date() } },
+        ],
+      },
       "username email"
     );
 
     if (users.length === 0) {
       console.log("⚠️ No eligible voters found.");
-      return res.status(400).json({ message: "No eligible voters found for sending credentials." });
+      return res
+        .status(400)
+        .json({ message: "No eligible voters found for sending credentials." });
     }
 
     console.log(`✅ Found ${users.length} users. Sending emails...`);
@@ -67,13 +76,15 @@ exports.sendEmails = async (req, res) => {
         await transporter.sendMail(mailOptions);
         console.log(`📨 Email sent to: ${user.email}`);
       } catch (emailError) {
-        console.error(`❌ Failed to send email to ${user.email}:`, emailError.message);
+        console.error(
+          `❌ Failed to send email to ${user.email}:`,
+          emailError.message
+        );
       }
     });
 
     await Promise.all(emailPromises);
     res.status(200).json({ message: "Emails sent successfully!" });
-
   } catch (error) {
     console.error("🚨 Error sending emails:", error);
     res.status(500).json({ error: "Failed to send emails" });
