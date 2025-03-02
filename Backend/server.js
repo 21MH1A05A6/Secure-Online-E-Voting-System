@@ -1,4 +1,5 @@
 // server.js
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -6,7 +7,8 @@ const fs = require("fs");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const electionRoutes = require("./routes/electionRoutes");
-const voterRoutes=require("./routes/voterRoutes");
+const voterRoutes = require("./routes/voterRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -29,11 +31,13 @@ connectDB();
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/elections", electionRoutes); 
-app.use("/api/voters",voterRoutes);
+app.use("/api/elections", electionRoutes);
+app.use("/api/voters", voterRoutes);
+app.use("/api/admin", adminRoutes);
+
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
+  console.error("❌ Error:", err.message);
   res.status(500).json({ message: "Internal Server Error" });
 });
 
