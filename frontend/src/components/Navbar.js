@@ -7,11 +7,11 @@ const Navbar = () => {
     <nav className="navbar">
       
       <div style={{
-  flex: 2, 
+  flex: 1, 
   justifyContent: 'center',
   alignItems: 'center',
   textAlign: 'center',
-  width:'100px'
+  width:'80px'
 }}>
   <h1 style={{
     fontSize: '3rem',
@@ -19,16 +19,18 @@ const Navbar = () => {
     fontWeight: 'bold',
     letterSpacing: '3px',
     textTransform: 'uppercase',
-    color: '#5A3E1B', // Deep brown for warm contrast
-    textShadow: '2px 2px 10px rgba(255, 223, 186, 0.9)', // Soft golden glow
-    background: 'linear-gradient(45deg, #D2B48C, #C19A6B, #8B4513)', // Tan, Light Brown, Saddle Brown
-    padding: '10px 30px',
-    borderRadius: '8px',
+    color: '#FFFFFF', // Bright white for strong contrast
+    textShadow: '4px 4px 12px rgba(0, 191, 255, 0.9)', // Strong golden glow for emphasis
+    background: 'linear-gradient(45deg, rgba(10, 82, 83, 0.8), rgba(2, 34, 108, 0.6))', // Soft golden gradient with transparency
+    padding: '12px 35px',
+    borderRadius: '10px',
     display: 'inline-block',
-    boxShadow: '0 0 15px rgba(255, 215, 0, 0.6)', // Soft gold glow to match yellow background
+    boxShadow: '0 0 20px rgba(30, 139, 179, 0.8)', // Glowing effect to stand out
+    marginLeft:'200px'
 }}>
     ONLINE E-VOTING SYSTEM
 </h1>
+
 
 </div>
 
