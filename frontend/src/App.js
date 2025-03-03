@@ -11,6 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AdminHomePage from "./pages/AdminHomePage";
 import CreateElection from "./pages/CreateElection";
 import ViewVoters from "./pages/ViewVoters";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -18,15 +19,14 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>}/>
           <Route path="/registerpage" element={<RegistrationPage />} />
           <Route path="/loginpage" element={<LoginPage />} />
-          <Route path="/details" element={<PersonalDetailsPage />} />
+          <Route path="/details" element={<ProtectedRoute><PersonalDetailsPage /></ProtectedRoute>} />
           <Route path="/searchpage" element={<VoterIDSearchPage />} />
-          <Route path="/admin-home" element={<AdminHomePage />} />
-          <Route path="/create-election" element={<CreateElection />} />
-          <Route path="/view-voters" element={<ViewVoters />} />
-
+          <Route path="/admin-home" element={<ProtectedRoute><AdminHomePage /></ProtectedRoute>} />
+          <Route path="/create-election" element={<ProtectedRoute><CreateElection /></ProtectedRoute>} />
+          <Route path="/view-voters" element={<ProtectedRoute><ViewVoters /></ProtectedRoute>} />
         </Routes>
       </Router>
       <div>
