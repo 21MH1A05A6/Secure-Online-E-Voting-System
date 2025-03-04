@@ -1,4 +1,3 @@
-// server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -9,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const electionRoutes = require("./routes/electionRoutes");
 const voterRoutes = require("./routes/voterRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const passwordRoutes = require("./routes/passwordRoutes"); // ✅ Import forgot password routes
 
 const app = express();
 
@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Serve static files (for uploaded images)
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Allows access to images via "/uploads"
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Connect Database
 connectDB();
@@ -34,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/elections", electionRoutes);
 app.use("/api/voters", voterRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/password", passwordRoutes); // ✅ Add forgot password route
 
 // Global Error Handler
 app.use((err, req, res, next) => {
