@@ -14,6 +14,7 @@ import ViewVoters from "./pages/ViewVoters";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Candidates from "./pages/Candidates";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/view-voters" element={<ProtectedRoute><ViewVoters /></ProtectedRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/candidates" element={<Candidates />} />
         </Routes>
       </Router>
       <div>

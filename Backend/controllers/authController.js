@@ -22,40 +22,82 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
+  
+  console.log("🔹 Login Attempt Received:", { username, email });
 
   try {
-    // 1️⃣ Check in the Admin collection first
-    let user = await Admin.findOne({ email });
-    let role = "admin"; // Default role if found in Admin collection
+    let user = null;
+    let role = "";
 
-    // 2️⃣ If not found in Admin, check in Users collection
-    if (!user) {
+    if (email) {
+      console.log("🔍 Checking Admin Login...");
+      user = await Admin.findOne({ email });
+      if (user) role = "admin";
+    }
+
+    if (!user && email) {
+      console.log("🔍 Checking User Login...");
       user = await User.findOne({ email });
-      role = "user"; // Set role to "user" if found in Users collection
+      if (user) role = "user";
     }
 
-    // 3️⃣ If user not found in both collections
+    if (!user && username) {
+      console.log("🔍 Checking Voter Login...");
+      user = await User.findOne({ voterId: username });
+      if (user) role = "voter";
+    }
+
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      console.log("❌ No user found for email:", email, "or voterId:", username);
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 4️⃣ Check password
-    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("✅ User Found:", user);
+
+    let isMatch = false;
+
+    if (role === "voter") {
+      if (user.tempPassword) {
+        isMatch = await bcrypt.compare(password, user.tempPassword);
+      } else {
+        return res.status(401).json({ message: "Voter password expired or invalid" });
+      }
+    } else {
+      isMatch = await bcrypt.compare(password, user.password);
+    }
+
+    console.log("🔑 Password Match Status:", isMatch);
+
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 5️⃣ Generate JWT token
+    if (role === "voter" && user.tempPasswordExpiry && new Date(user.tempPasswordExpiry) < new Date()) {
+      return res.status(401).json({ message: "Temporary password has expired" });
+    }
+
     const token = jwt.sign(
-      { userId: user._id, role }, // Include role in the token
+      { userId: user._id, role, voterId: user.voterId },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.json({ token, role }); // Send token and role to frontend
+    console.log("✅ Login Successful:", { role, voterId: user.voterId });
+
+    return res.json({
+      token,
+      role,
+      voterId: user.voterId,
+      redirect: role === "admin" ? "/admin-home" 
+                : role === "voter" ? "/candidates" 
+                : "/home"
+    });
+
   } catch (error) {
-    console.error("Login Error:", error);
+    console.error("❌ Login Error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+

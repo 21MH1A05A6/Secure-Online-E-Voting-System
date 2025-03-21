@@ -5,7 +5,7 @@ import toast from "react-hot-toast"; // For notifications
 import "../assets/css/login.css";
 
 const LoginForm = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ identifier: "", password: "" });
   const navigate = useNavigate(); // Hook for navigation
 
   const handleChange = (e) => {
@@ -14,38 +14,46 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (formData.email === "" || formData.password === "") {
-      toast.error("Please enter both email and password.");
+  
+    if (formData.identifier === "" || formData.password === "") {
+      toast.error("Please enter both identifier and password.");
       return;
     }
-
+  
     console.log("Submitting Login Request:", formData); // Debug log
-
+  
+    // Detect whether it's an email or a voter ID
+    const isEmail = formData.identifier.includes("@");
+    const requestBody = isEmail
+      ? { email: formData.identifier, password: formData.password }
+      : { username: formData.identifier, password: formData.password };
+  
     try {
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
-        formData
+        requestBody
       );
-
+  
       console.log("Login Response:", response.data); // Debug log
-
+  
+      // ✅ Store voterId along with the token
       localStorage.setItem("token", response.data.token);
-      toast.success(response.data.message);
-
-      // Redirect based on user role
+      localStorage.setItem("voterId", response.data.voterId); // 🔹 Save voterId
+  
+      toast.success("Login successful!");
+  
+      // Redirect to appropriate page
       setTimeout(() => {
-        if (response.data.role === "admin") {
-          navigate("/admin-home");
-        } else {
-          navigate("/home");
-        }
+        navigate(response.data.redirect);
       }, 1000);
     } catch (error) {
       console.error("Login Error:", error.response || error.message);
       toast.error(error.response?.data?.message || "Invalid login credentials");
     }
   };
+  
+  
+  
 
   return (
     <div className="login-page">
@@ -53,15 +61,15 @@ const LoginForm = () => {
         <h2>LOGIN</h2>
         <form onSubmit={handleSubmit}>
           <div className="input-container">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="identifier">Email or Voter ID:</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="identifier"
+              name="identifier"
+              value={formData.identifier}
               onChange={handleChange}
               required
-              autoComplete="email" // ✅ Fix autofill warning
+              autoComplete="username" 
             />
           </div>
           <div className="input-container">
@@ -82,7 +90,7 @@ const LoginForm = () => {
         </form>
         <br />
         <p className="forgot-password">
-          <a href="/" style={{margin:"30px"}}>Home</a> 
+          <a href="/" style={{ margin: "30px" }}>Home</a> 
           <a href="/forgot-password">Forgot Password?</a> 
         </p>
       </div>

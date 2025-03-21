@@ -37,7 +37,7 @@ exports.sendEmails = async (req, res) => {
     const users = await User.find(
       {
         $or: [
-          { tempPassword: { $exists: false } },
+          { tempPassword: null },
           { tempPasswordExpiry: { $lt: new Date() } },
         ],
       },
@@ -69,7 +69,7 @@ exports.sendEmails = async (req, res) => {
           from: process.env.EMAIL_USER,
           to: user.email,
           subject: "Your Temporary Voting Credentials",
-          text: `Dear ${user.username},\n\nHere are your temporary login credentials:\n\nUsername: ${user.username}\nTemporary Password: ${tempPassword}\n\nThis password is valid only for voting and will expire after you cast your vote.\n\nBest regards,\nElection System`,
+          text: `Dear ${user.username},\n\nHere are your temporary login credentials:\n\nUsername: ${user.voterId}\nTemporary Password: ${tempPassword}\n\nThis password is valid only for voting and will expire after you cast your vote.\n\nBest regards,\nElection System`,
         };
 
         // Send email
