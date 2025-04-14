@@ -1,9 +1,25 @@
 const mongoose = require("mongoose");
 
+const FingerprintSchema = new mongoose.Schema({
+  credentialID: {
+    type: Buffer, // Binary credential ID
+    required: true,
+  },
+  publicKey: {
+    type: String, // PEM format public key
+    required: true,
+  },
+  counter: {
+    type: Number, // Authenticator counter
+    required: true,
+  },
+});
+
 const DetailsSchema = new mongoose.Schema({
   voterId: {
     type: String,
-    unique: true, // Ensure each voter ID is unique
+    unique: true,
+    required: true,
   },
   aadhaarNumber: {
     type: String,
@@ -35,21 +51,17 @@ const DetailsSchema = new mongoose.Schema({
   },
   state: {
     type: String,
-    default: "Andhra Pradesh", // Default value
+    default: "Andhra Pradesh",
     required: true,
   },
   country: {
     type: String,
-    default: "India", // Default value
+    default: "India",
     required: true,
   },
-  fingerprintScan: {
-    type: String, // Can store base64 encoded image or file path
-    default: "",
-  },
-  irisScan: {
-    type: String, // Can store base64 encoded image or file path
-    default: "",
+  fingerprint: {
+    type: FingerprintSchema,
+    required: false, // Required only if fingerprint is enrolled
   },
 });
 
