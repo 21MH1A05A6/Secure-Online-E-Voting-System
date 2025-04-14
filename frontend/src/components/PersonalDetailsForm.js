@@ -1,65 +1,136 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import Axios
+import React, { useState } from "react";
+import axios from "axios";
 import "../assets/css/details.css";
 import pic8 from "../assets/images/pic8.png";
-import pic9 from "../assets/images/pic9.jpeg";
+import { useNavigate } from "react-router-dom";
 
 const PersonalDetailsForm = () => {
-  const [voterId, setVoterId] = useState(""); // State for Voter ID
+  const [fingerprintCaptured, setFingerprintCaptured] = useState(false);
+  const [error, setError] = useState("");
+  const id = localStorage.getItem("voterId");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    aadhaarNumber: "",
+    voterId: id || "",
+    aadhaar: "",
     fullName: "",
     dob: "",
     gender: "",
     address: "",
     pincode: "",
-    state: "Andhra Pradesh",
+    state: "AP",
     country: "India",
+    fingerprint: "",
+    publicKey: "", // Store public key for backend
   });
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchVoterId = async () => {
-      const email = localStorage.getItem("email"); // Retrieve email from localStorage
-      if (!email) {
-        console.error("No email found in localStorage");
-        return;
-      }
+  const captureFingerprint = async () => {
+    try {
+      const publicKeyCredentialCreationOptions = {
+        challenge: new Uint8Array(32), // Random challenge
+        rp: { name: "Secure E-Voting System" },
+        user: {
+          id: new Uint8Array(16), // Random user ID
+          name: formData.fullName || "Anonymous",
+          displayName: formData.fullName || "Anonymous",
+        },
+        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+          requireResidentKey: false,
+          userVerification: "preferred",
+        },
+        timeout: 60000,
+        attestation: "direct",
+      };
 
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/user/getVoterId",
-          { email }
+      const credential = await navigator.credentials.create({
+        publicKey: publicKeyCredentialCreationOptions,
+      });
+
+      if (credential) {
+        const attestationObject = new Uint8Array(
+          credential.response.attestationObject
         );
-        setVoterId(response.data.voterId); // Set voterId from the response
-      } catch (error) {
-        console.error(
-          "Error fetching voterId:",
-          error.response?.data?.message || error.message
+        const clientDataJSON = new Uint8Array(
+          credential.response.clientDataJSON
         );
+        const publicKeyBase64 = btoa(String.fromCharCode(...attestationObject));
+
+        setFingerprintCaptured(true);
+        setFormData({
+          ...formData,
+          fingerprint: JSON.stringify({
+            attestationObject: Array.from(attestationObject),
+            clientDataJSON: Array.from(clientDataJSON),
+          }),
+          publicKey: publicKeyBase64,
+        });
+
+        alert("Fingerprint registered successfully!");
       }
-    };
-
-    fetchVoterId();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "aadhaarNumber" && value.length > 12) {
-      setError("Aadhaar number must be 12 digits only.");
-    } else {
-      setError("");
-      setFormData({ ...formData, [name]: value });
+    } catch (error) {
+      console.error("Error capturing fingerprint:", error);
+      alert(
+        "Fingerprint authentication failed. Ensure your device has fingerprint support."
+      );
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.aadhaarNumber.length !== 12) {
-      setError("Aadhaar number must be exactly 12 digits.");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "aadhaar" && (!/^\d*$/.test(value) || value.length > 12)) {
+      setError("Aadhaar number must be 12 digits.");
       return;
     }
-    console.log("Form Submitted:", formData);
+    if (name === "pincode" && (!/^\d*$/.test(value) || value.length > 6)) {
+      setError("Pin Code must be exactly 6 digits.");
+      return;
+    }
+    setError("");
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!fingerprintCaptured) {
+      alert("Please authenticate using fingerprint before submitting.");
+      return;
+    }
+
+    if (
+      !formData.voterId ||
+      !formData.aadhaar ||
+      !formData.fullName ||
+      !formData.fingerprint
+    ) {
+      alert("All fields including fingerprint authentication are required!");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/details/storeDetails",
+        {
+          voterId: formData.voterId,
+          aadhaarNumber: formData.aadhaar,
+          fullName: formData.fullName,
+          dob: formData.dob,
+          gender: formData.gender,
+          address: formData.address,
+          pincode: formData.pincode,
+          fingerprintScan: formData.fingerprint, // Store fingerprint data
+          publicKey: formData.publicKey, // Send public key
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Details saved successfully!");
+        navigate("/loginpage");
+      }
+    } catch (error) {
+      console.error("Error saving details:", error);
+      alert(error.response?.data?.message || "Failed to save details.");
+    }
   };
 
   return (
@@ -69,7 +140,12 @@ const PersonalDetailsForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="input-container">
             <label>Voter ID:</label>
-            <input type="text" name="voterId" value={voterId} readOnly />
+            <input
+              type="text"
+              name="voterId"
+              value={id || "No ID found"}
+              readOnly
+            />
           </div>
           <div className="input-container">
             <label>Full Name:</label>
@@ -97,7 +173,7 @@ const PersonalDetailsForm = () => {
             <label>Aadhaar Number:</label>
             <input
               type="text"
-              name="aadhaarNumber"
+              name="aadhaar"
               maxLength="12"
               onChange={handleChange}
               required
@@ -109,7 +185,6 @@ const PersonalDetailsForm = () => {
             <input
               type="text"
               name="address"
-              style={{ height: "60px" }}
               onChange={handleChange}
               required
             />
@@ -131,8 +206,6 @@ const PersonalDetailsForm = () => {
             <label>Country:</label>
             <input type="text" name="country" value="India" readOnly />
           </div>
-
-          {/* Fingerprint and Iris Scan Buttons */}
           <div className="biometric-section">
             <div className="biometric-item">
               <img
@@ -140,18 +213,17 @@ const PersonalDetailsForm = () => {
                 alt="FingerPrint-Scan"
                 className="biometric-image"
               />
-              <button type="button" className="biometric-btn">
-                Capture Fingerprint
-              </button>
-            </div>
-            <div className="biometric-item">
-              <img src={pic9} alt="Iris-Scan" className="biometric-image" />
-              <button type="button" className="biometric-btn">
-                Capture Iris Scan
+              <button
+                type="button"
+                onClick={captureFingerprint}
+                disabled={fingerprintCaptured}
+              >
+                {fingerprintCaptured
+                  ? "Fingerprint Captured"
+                  : "Authenticate Fingerprint"}
               </button>
             </div>
           </div>
-
           <button type="submit" className="submit-btn">
             Submit
           </button>
