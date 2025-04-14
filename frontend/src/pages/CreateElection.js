@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "../assets/css/create-election.css";
+import {useNavigate} from "react-router-dom";
 
 const CreateElection = () => {
   const [electionName, setElectionName] = useState("");
   const [candidates, setCandidates] = useState([]);
+  const navigate = useNavigate();
 
   // Add a new candidate
   const handleAddCandidate = () => {
@@ -66,6 +68,7 @@ const CreateElection = () => {
 
       if (response.ok) {
         alert("Election Created Successfully!");
+        navigate("/admin-home");
       } else {
         throw new Error("Failed to create election");
       }
