@@ -3,11 +3,15 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const electionRoutes = require("./routes/electionRoutes");
 const voterRoutes = require("./routes/voterRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const fileRoutes = require("./routes/fileRoutes");
+const detailsRoutes = require("./routes/detailsRoutes");
+const webauthn = require("./routes/webauthn");
 const passwordRoutes = require("./routes/passwordRoutes"); // ✅ Import forgot password routes
 
 const app = express();
@@ -18,9 +22,29 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
+let users = {}; // Temporary storage for user fingerprint keys
+
+// Route to register fingerprint (stores public key)
+app.post("/api/register", (req, res) => {
+  const { id, publicKey } = req.body;
+  users[id] = { publicKey };
+  res.json({ success: true, message: "Fingerprint registered successfully!" });
+});
+
+// Route to authenticate user using fingerprint
+app.post("/api/authenticate", (req, res) => {
+  const { id } = req.body;
+  if (users[id]) {
+    res.json({ success: true, message: "Authentication successful!" });
+  } else {
+    res.json({ success: false, message: "Authentication failed!" });
+  }
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cors());
 
 // Serve static files (for uploaded images)
@@ -34,7 +58,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/elections", electionRoutes);
 app.use("/api/voters", voterRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/files", fileRoutes);
 app.use("/api/password", passwordRoutes); // ✅ Add forgot password route
+app.use("/api/details", detailsRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
