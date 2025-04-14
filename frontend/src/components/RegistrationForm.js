@@ -35,7 +35,7 @@ const RegistrationPage = () => {
       );
 
       toast.success(response.data.message);
-      navigate("/loginpage");
+      navigate("/details");
       setFormData({
         username: "",
         email: "",
@@ -97,8 +97,10 @@ const RegistrationPage = () => {
             Register
           </button>
         </form>
-        <a href="/" style={{margin:"30px"}}>Home</a> 
-        <a href="/loginpage">Have an account?</a> 
+        <a href="/" style={{ margin: "30px" }}>
+          Home
+        </a>
+        <a href="/loginpage">Have an account?</a>
       </div>
     </div>
   );
