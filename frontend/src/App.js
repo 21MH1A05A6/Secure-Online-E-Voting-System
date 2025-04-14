@@ -22,14 +22,49 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>}/>
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/registerpage" element={<RegistrationPage />} />
           <Route path="/loginpage" element={<LoginPage />} />
-          <Route path="/details" element={<ProtectedRoute><PersonalDetailsPage /></ProtectedRoute>} />
+          <Route
+            path="/details"
+            element={
+              <ProtectedRoute>
+                <PersonalDetailsPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/searchpage" element={<VoterIDSearchPage />} />
-          <Route path="/admin-home" element={<ProtectedRoute><AdminHomePage /></ProtectedRoute>} />
-          <Route path="/create-election" element={<ProtectedRoute><CreateElection /></ProtectedRoute>} />
-          <Route path="/view-voters" element={<ProtectedRoute><ViewVoters /></ProtectedRoute>} />
+          <Route
+            path="/admin-home"
+            element={
+              <ProtectedRoute>
+                <AdminHomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-election"
+            element={
+              <ProtectedRoute>
+                <CreateElection />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/view-voters"
+            element={
+              <ProtectedRoute>
+                <ViewVoters />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/candidates" element={<Candidates />} />
