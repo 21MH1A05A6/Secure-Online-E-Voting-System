@@ -6,7 +6,7 @@ const crypto = require("crypto");
 // Fetch all registered voters
 exports.getVoters = async (req, res) => {
   try {
-    const voters = await User.find()
+    const voters = await User.find({}, "voterId username email");
     res.status(200).json(voters);
   } catch (error) {
     console.error("Error fetching voters:", error);
@@ -33,15 +33,15 @@ exports.sendEmails = async (req, res) => {
   try {
     console.log("📧 Fetching users for sending emails...");
 
-    // Find users who haven't received credentials or whose credentials have expired
+    // Find users who need a temporary password
     const users = await User.find(
       {
         $or: [
-          { tempPassword: null },
-          { tempPasswordExpiry: { $lt: new Date() } },
+          { tempPassword: { $exists: false } }, // Check if tempPassword is missing
+          { tempPasswordExpiry: { $lt: new Date() } }, // Expired temp passwords
         ],
       },
-      "username email"
+      "voterId username email" // Fetch voterId along with username & email
     );
 
     if (users.length === 0) {
@@ -60,9 +60,15 @@ exports.sendEmails = async (req, res) => {
 
       try {
         // Update user with temporary credentials and expiry
-        user.tempPassword = hashedPassword;
-        user.tempPasswordExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        await user.save();
+        await User.updateOne(
+          { _id: user._id },
+          {
+            $set: {
+              tempPassword: hashedPassword,
+              tempPasswordExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            },
+          }
+        );
 
         // Email content
         const mailOptions = {
@@ -76,10 +82,7 @@ exports.sendEmails = async (req, res) => {
         await transporter.sendMail(mailOptions);
         console.log(`📨 Email sent to: ${user.email}`);
       } catch (emailError) {
-        console.error(
-          `❌ Failed to send email to ${user.email}:`,
-          emailError.message
-        );
+        console.error(`❌ Failed to send email to ${user.email}:`, emailError.message);
       }
     });
 
