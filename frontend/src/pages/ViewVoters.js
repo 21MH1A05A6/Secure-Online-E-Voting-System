@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../assets/css/view-voters.css";
+import {useNavigate} from "react-router-dom";
 
 const ViewVoters = () => {
   const [voters, setVoters] = useState([]);
   // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVoters = async () => {
@@ -57,6 +59,7 @@ const ViewVoters = () => {
       );
       alert("Emails sent successfully!");
       console.log("✅ Emails sent successfully:", response.data);
+      navigate("/admin-home");
     } catch (error) {
       alert("❌ Error sending emails. Please try again.");
       console.error("❌ Error sending emails:", error.response ? error.response.data : error.message );
