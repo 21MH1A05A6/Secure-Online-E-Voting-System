@@ -1,17 +1,32 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../assets/css/admin-home.css";
 
 const AdminHomePage = () => {
   const navigate = useNavigate();
 
-  const LogoutButton = () => {
-    // Clear the localStorage data (token and user)
+  const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    // Redirect the user to the login page
+    localStorage.removeItem("voterId");
     navigate("/loginpage");
+  };
+
+  const declareResults = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/elections/declare-results",
+        {
+          electionId: "67f4bd5a8ae51a889c877e5c", // Replace with actual election ID
+        }
+      );
+
+      alert(response.data.message);
+    } catch (error) {
+      console.error("Error declaring results:", error);
+      alert("Failed to declare results. Please try again.");
+    }
   };
 
   return (
@@ -30,13 +45,10 @@ const AdminHomePage = () => {
         >
           View Voters
         </button>
-        <button
-          className="home-button"
-          onClick={() => navigate("/declare-results")}
-        >
+        <button className="home-button" onClick={declareResults}>
           Declare Results
         </button>
-        <button className="home-button" onClick={LogoutButton}>
+        <button className="home-button" onClick={handleLogout}>
           Logout
         </button>
       </div>
